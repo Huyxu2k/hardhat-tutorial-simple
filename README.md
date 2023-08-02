@@ -19,3 +19,8 @@ Deploy on Ganache :
 ```shell
 npx hardhat run scripts/deploy.js --network ganache
 ```
+
+Deploy on Sepolia testnet:
+```shell
+npx hardhat run scripts/deploy.js --network sepolia
+```
