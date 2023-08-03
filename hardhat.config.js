@@ -14,5 +14,14 @@ module.exports = {
       url: process.env.API_URL,
       accounts:[`0x${process.env.PRIVATE_KEY_SEPOLIA}`]
     }
-  }
+  },
+  namedAccounts: {
+    deployer: {
+        default: 0,
+        1: 0, 
+    },
+    player: {
+        default: 1,
+    },
+},
 };
