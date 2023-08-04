@@ -6,7 +6,11 @@ import "@chainlink/contracts/src/v0.8/interfaces/KeeperCompatibleInterface.sol";
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+//error custom
 error Raffle_UpkeepNotNeeded(uint256 currentBalance,uint256 numPlayers,uint256 raffleState );
+error Raffle_SendMoreToEnterRaffle();
+error Raffle_RaffleNotOpen();
+error Raffle_TransferFailed();
 
 contract Raffle is VRFConsumerBaseV2, KeeperCompatibleInterface {
     //enum 
@@ -57,9 +61,15 @@ contract Raffle is VRFConsumerBaseV2, KeeperCompatibleInterface {
     //function
     function enterRaffle() public payable {
         //check value 
-        require(msg.value < i_entrancefee, "Not enough ETH");
+        //require(msg.value < i_entrancefee, "Not enough ETH");
+        if(msg.value <i_entrancefee){
+            revert Raffle_SendMoreToEnterRaffle();
+        }
         //check state
-        require(s_raffleState!=RaffleState.OPEN,"Not Open");
+        //require(s_raffleState!=RaffleState.OPEN,"Not Open");
+        if(s_raffleState!=RaffleState.OPEN){
+            revert Raffle_RaffleNotOpen();
+        }
 
         s_players.push(payable(msg.sender));
         //Emit an event
@@ -95,7 +105,10 @@ contract Raffle is VRFConsumerBaseV2, KeeperCompatibleInterface {
         s_lateTimeStamp=block.timestamp;
         (bool success,) =recentWinner.call{value:address(this).balance}("");
 
-        require(success,"Transfer is failed");
+        //require(success,"Transfer is failed");
+        if(!success){
+            revert Raffle_TransferFailed();
+        }
 
         emit WinnerPicked(recentWinner);
         
